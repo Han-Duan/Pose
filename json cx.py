@@ -71,12 +71,38 @@ def parseJson():
 
 
 
+def computeVector(kp1,kp2):
+    if len(kp1) != len(kp2):
+        # "length of kp list does not match"
+        return -1
+    # initialize vector array
+    vec_array = []
+    x_sum = 0
+    y_sum = 0
+    cnt = 0
+    for i in range(len(kp1)):
+        if kp1[i][3] != kp2[i][3]:
+            # "key points not match"
+            return -2
+        x_diff = kp1[i][0]-kp2[i][0]
+        y_diff = kp1[i][1]-kp2[i][1]
+        vec_array.append([x_diff, y_diff])
+        if int(x_diff) != 0 and int(y_diff) != 0:
+            x_sum += x_diff
+            y_sum += y_diff
+            cnt += 1
+    avg_vec = [x_sum/cnt, y_sum/cnt]
+    return vec_array, avg_vec
 
 
 
 def main():
-    k,t = parseJson()
-    a= 1
+    def main():
+    kp1,kp2 = parseJson()
+    print(kp1)
+    print(kp2)
+    vec, avgVec = computeVector(kp1, kp2)
+    print(vec, avgVec)
 
 
 if __name__ == '__main__':
