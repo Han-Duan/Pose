@@ -95,14 +95,26 @@ def computeVector(kp1,kp2):
     return vec_array, avg_vec
 
 
+# move kp2 to kp1 and call it kp2_prime
+def computeKpPrime(kp2, avg_vec):
+    kp2_prime = []
+    for i in range(len(kp2)):
+        if int(kp2[i][0]) != 0 and int(kp2[i][1]) != 0:
+            x_tmp = kp2[i][0] - avg_vec[0]
+            y_tmp = kp2[i][1] - avg_vec[1]
+            confidence = kp2[i][2]
+            pos = kp2[i][3]
+            kp2_prime.append([x_tmp, y_tmp, confidence, pos])
+        else:
+            kp2_prime.append(kp2[i])
+    return kp2_prime
+
 
 def main():
     def main():
     kp1,kp2 = parseJson()
-    print(kp1)
-    print(kp2)
-    vec, avgVec = computeVector(kp1, kp2)
-    print(vec, avgVec)
+    vec, avg_vec = computeVector(kp1, kp2)
+    kp2_prime = computeKpPrime(kp2, avg_vec)
 
 
 if __name__ == '__main__':
