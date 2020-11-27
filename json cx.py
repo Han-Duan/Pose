@@ -3,7 +3,7 @@ import sys
 from json import loads
 from re import sub
 import json
-
+import statistics
 
 
 body_part_long_names = [
@@ -109,6 +109,30 @@ def computeKpPrime(kp2, avg_vec):
             kp2_prime.append(kp2[i])
     return kp2_prime
 
+
+# method: 
+# 1. mean 
+# 2. higher confidence
+# 3. waited sum
+# return list of points (x(int), y(int), position(str))
+def selectKp(kp1, kp2_prime, method):
+    kp_final = []
+    if method == 1:
+        for i in range(len(kp1)):
+            x_new = round(statistics.mean(kp1[i][0],kp2_prime[i][0]))
+            y_new = round(statistics.mean(kp1[i][1],kp2_prime[i][1]))
+            kp_final.append([x_new,y_new,kp1[i][3]])
+    if method == 2:
+        for i in range(len(kp1)):
+            # compare the confidence
+            if kp1[i][2] >= kp2_prime[i][2]:
+                kp_final.append([kp1[i][0], kp1[i][1], kp1[i][3]])
+            else:
+                kp_final.append([kp2_prime[i][0], kp2_prime[i][1], kp2_prime[i][3]])
+    if method == 3:
+        pass
+    return kp_final
+    
 
 def main():
     def main():
