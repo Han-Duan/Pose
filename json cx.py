@@ -164,8 +164,8 @@ def selectKp(kp1, kp2_prime, method):
     kp_final = []
     if method == 1:
         for i in range(len(kp1)):
-            x_new = round(statistics.mean(kp1[i][0],kp2_prime[i][0]))
-            y_new = round(statistics.mean(kp1[i][1],kp2_prime[i][1]))
+            x_new = round(statistics.mean([kp1[i][0],np.int32(kp2_prime[i][0])]))
+            y_new = round(statistics.mean([kp1[i][1],np.int32(kp2_prime[i][1])]))
             kp_final.append([x_new,y_new,kp1[i][3]])
     if method == 2:
         for i in range(len(kp1)):
@@ -185,11 +185,18 @@ def main():
     print(kp2)
     vec, avgVec = computeVector(kp1, kp2)
     print(vec, avgVec)
-    imgL = cv2.imread('/Users/handuan/Desktop/untitled folder/WechatIMG5.jpeg',0)
-    img2 = cv2.imread('/Users/handuan/Desktop/untitled folder/WechatIMG5.jpeg', cv2.IMREAD_GRAYSCALE)  # queryimage # left image
-    plt.imshow(img2)
-    draw(kp1)
+    imgL = cv2.imread('./WechatIMG5.jpeg',0)
+    imgR = cv2.imread('./WechatIMG6.jpeg', 0)
+
+
+    plt.imshow(imgR)
+    draw(kp2)
+
+
     kp2_prime = computeKpPrime(kp2, avgVec)
+    fixed = selectKp(kp1,kp2_prime,1)
+    plt.imshow(imgR)
+    draw(fixed)
     a = 1;
 
 
