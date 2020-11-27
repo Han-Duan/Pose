@@ -103,22 +103,19 @@ def computeVector(kp1, kp2):
 def draw_2d_image_points(
     image_points,
     point_labels=[]):
-    image_points = np.asarray(image_points).reshape((-1, 3))
+    image_points = np.asarray(image_points).reshape((-1, 2))
     points_image_u = image_points[:, 0]
     points_image_v = image_points[:, 1]
-    points_image_l = image_points[:, 2]
+
     plt.plot(
         points_image_u,
         points_image_v,
         '.')
 
-    for i in range(len(point_labels)):
-        plt.text(points_image_u[i], points_image_v[i], body_part_long_names[points_image_l[i]])
-
 def draw(kp1):
     all_points = []
     for i in range(0,24):
-        all_points.append([kp1[i][0], kp1[i][1], i])
+        all_points.append([kp1[i][0], kp1[i][1]])
 
     valid_keypoints = np.empty(24,dtype=np.bool_)
     for i in range(0,24):
@@ -192,8 +189,8 @@ def main():
     img2 = cv2.imread('/Users/handuan/Desktop/untitled folder/WechatIMG5.jpeg', cv2.IMREAD_GRAYSCALE)  # queryimage # left image
     plt.imshow(img2)
     draw(kp1)
-    kp2_prime = computeKpPrime(kp2, avg_vec)
-
+    kp2_prime = computeKpPrime(kp2, avgVec)
+    a = 1;
 
 
 if __name__ == '__main__':
