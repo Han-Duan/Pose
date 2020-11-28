@@ -4,6 +4,7 @@ from json import loads
 from re import sub
 import json
 import matplotlib.pyplot as plt
+import matplotlib
 import cv2
 import statistics
 
@@ -100,9 +101,7 @@ def computeVector(kp1, kp2):
     avg_vec = [x_sum / cnt, y_sum / cnt]
     return vec_array, avg_vec
 
-def draw_2d_image_points(
-    image_points,
-    point_labels=[]):
+def draw_2d_image_points(image_points):
     image_points = np.asarray(image_points).reshape((-1, 2))
     points_image_u = image_points[:, 0]
     points_image_v = image_points[:, 1]
@@ -112,10 +111,29 @@ def draw_2d_image_points(
         points_image_v,
         '.')
 
-def draw(kp1):
+
+def draw_3d_image_points( image_points):
+    image_points = np.asarray(image_points).reshape((-1, 3))
+    points_image_u = image_points[:, 0]
+    points_image_v = image_points[:, 1]
+    points_image_d = np.int32(image_points[:, 2])
+
+    plt.plot(
+        points_image_u,
+        points_image_v,
+        '.')
+    for i in range(len(image_points)):
+        plt.text(points_image_u[i], points_image_v[i], points_image_d[i])
+
+def draw(kp1, drawer): #drawer is 2d or 3d, 2d drawer needs N*2 matrix and 3d drawer needs N*3 matrix
+    matplotlib.rcParams.update({'font.size': 6}) #reset the font size
     all_points = []
+
     for i in range(0,24):
-        all_points.append([kp1[i][0], kp1[i][1]])
+        if(np.size(kp1,1) == 3): # the input kp1's dimension is not fixed 2D or 3D
+            all_points.append([kp1[i][0], kp1[i][1], kp1[i][2]])
+        else:
+            all_points.append([kp1[i][0], kp1[i][1]])
 
     valid_keypoints = np.empty(24,dtype=np.bool_)
     for i in range(0,24):
@@ -125,7 +143,7 @@ def draw(kp1):
             valid_keypoints[i] = np.True_
     all_points = np.asarray(all_points)
     plottable_points = all_points[valid_keypoints]
-    draw_2d_image_points(plottable_points)
+    drawer(plottable_points)
     for body_part_connector in body_part_connectors:
         body_part_from_index = body_part_connector[0]
         body_part_to_index = body_part_connector[1]
@@ -137,7 +155,13 @@ def draw(kp1):
                 alpha=0.2)
     plt.show()
 
-
+# Simple function to cauculate the depth of a matched point, p1 and p2 are two 2*1 list
+def getDepth(p1,p2):
+    f = 26 #焦距
+    B = 30 #镜头之间的距离
+    diff = (p1[0] - p2[0]) / 1080
+    Z = f*B/np.abs(diff) #得到的深度信息
+    return Z
 
 
 # move kp2 to kp1 and call it kp2_prime
@@ -185,18 +209,22 @@ def main():
     print(kp2)
     vec, avgVec = computeVector(kp1, kp2)
     print(vec, avgVec)
-    imgL = cv2.imread('./WechatIMG5.jpeg',0)
+    imgL = cv2.imread('./WechatIMG5.jpeg', 0)
     imgR = cv2.imread('./WechatIMG6.jpeg', 0)
 
 
     plt.imshow(imgR)
-    draw(kp2)
+    draw(kp2,draw_2d_image_points)
 
 
     kp2_prime = computeKpPrime(kp2, avgVec)
     fixed = selectKp(kp1,kp2_prime,1)
     plt.imshow(imgR)
-    draw(fixed)
+    tdpoints = []
+    for i in range(0,24): #Add depth information into matrix
+        tdpoints.append([fixed[i][0],fixed[i][1],getDepth(kp1[i],kp2[i])])
+    draw(tdpoints,draw_3d_image_points) #Draw calibrated image with depth data
+
     a = 1;
 
 
